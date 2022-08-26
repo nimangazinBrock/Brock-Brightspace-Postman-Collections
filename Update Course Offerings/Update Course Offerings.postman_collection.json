@@ -1,0 +1,156 @@
+{
+	"info": {
+		"_postman_id": "bdbae443-40d9-4f8a-a1b8-34898e3a2180",
+		"name": "Update Course Offerings",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19951509"
+	},
+	"item": [
+		{
+			"name": "Get course offering",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Retrieve OrgUnitId, OrgUnitCode, Title from the Iteration input CSV file\r",
+							"\r",
+							"var IterationOrgUnitId = pm.iterationData.get('OrgUnitId');\r",
+							"postman.setEnvironmentVariable(\"orgunitid\", IterationOrgUnitId);\r",
+							"\r",
+							"var IterationOrgUnitCode = pm.iterationData.get('OrgUnitCode');\r",
+							"postman.setEnvironmentVariable(\"orgunitcode\", IterationOrgUnitCode);\r",
+							"\r",
+							"var IterationName = pm.iterationData.get('Title');\r",
+							"postman.setEnvironmentVariable(\"name\", String(IterationName).replace(/[^a-zA-Z0-9,:;\\-.?#*&$@_/+=()^'%!`{}~|>< ]/g, ''));\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Set SatrtDate, EndDate, IsActive, Description and CanSelfRegister variables for next call\r",
+							"let jsonData = pm.response.json();\r",
+							"postman.setEnvironmentVariable(\"startdate\", JSON.stringify(jsonData.StartDate));\r",
+							"postman.setEnvironmentVariable(\"enddate\", JSON.stringify(jsonData.EndDate));\r",
+							"postman.setEnvironmentVariable(\"isactive\", JSON.stringify(jsonData.IsActive));\r",
+							"postman.setEnvironmentVariable(\"description\", jsonData.Description.Html);\r",
+							"postman.setEnvironmentVariable(\"canselfregister\", JSON.stringify(jsonData.CanSelfRegister));\r",
+							"\r",
+							"pm.test(String(\"Course offerings orgunitid: \" + pm.environment.get(\"orgunitid\")), function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BrightspaceDomain}}/d2l/api/lp/{{lpversion}}/courses/{{orgunitid}}",
+					"host": [
+						"{{BrightspaceDomain}}"
+					],
+					"path": [
+						"d2l",
+						"api",
+						"lp",
+						"{{lpversion}}",
+						"courses",
+						"{{orgunitid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update course offering",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(String(\"Course offerings orgunitid: \" + pm.environment.get(\"orgunitid\")), function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Name\": \"{{name}}\",\r\n    \"Code\": \"{{orgunitcode}}\",\r\n    \"StartDate\": {{startdate}},\r\n    \"EndDate\": {{enddate}},\r\n    \"IsActive\": {{isactive}},\r\n    \"Description\": {\r\n        \"Content\": \"{{description}}\",\r\n        \"Type\": \"Html\"\r\n     },\r\n    \"CanSelfRegister\": {{canselfregister}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BrightspaceDomain}}/d2l/api/lp/{{lpversion}}/courses/{{orgunitid}}",
+					"host": [
+						"{{BrightspaceDomain}}"
+					],
+					"path": [
+						"d2l",
+						"api",
+						"lp",
+						"{{lpversion}}",
+						"courses",
+						"{{orgunitid}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accesstoken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
